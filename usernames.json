@@ -1,0 +1,3 @@
+var usernames = {
+    "mapBoxToken": "Your Mapbox Token Goes Here"
+}
