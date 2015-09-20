@@ -39,13 +39,15 @@ function mapEntries() {
         //get the mapcoordinates
         var description = eachEntryJson[i].content;
         var mapCoords = getMapCoordinates(eachEntryJson[i].categories);
+        var imgString = getImgString(eachEntryJson[i].content);
+        var popUpImg = getPopupImg(imgString);
 
         //If there are mapCoordinates in the post, map them
         if (typeof mapCoords !== 'undefined') {
             var title = eachEntryJson[i].title;
             var marker = L.marker(new L.LatLng(mapCoords[0], mapCoords[1]), {
                 icon: L.icon({
-                    'iconUrl': "images/tumblrLogo.png",
+                    'iconUrl': popUpImg,
                     'iconSize': [50, 50], // size of the icon
                     'iconAnchor': [25, 25], // point of the icon which will correspond to marker's location
                     'popupAnchor': [0, -25], // point from which the popup should open relative to the iconAnchor
@@ -55,11 +57,17 @@ function mapEntries() {
             });
             //                    var title = eachEntryJson[i].title;
             //                    var snippet = eachEntryJson[i].contentSnippet;
+            var iframeArray = getIframes(eachEntryJson[i].content);
             var content = getContentString(eachEntryJson[i].content);
             var link = eachEntryJson[i].link;
-            var imgString = getImgString(eachEntryJson[i].content);
-            var PopupString = content[0];
-            PopupString += imgString[0];
+            var PopupString = "";
+            if (iframeArray.length > 0) { //for videos
+                PopupString += iframeArray[0];
+            }
+            PopupString += content[0];
+            if (imgString.length > 0) {//incase it is a video and has no img
+                PopupString += imgString[0]
+            }
             for (var k = 1; k < content.length; k++) {
                 PopupString += content[k];
             }
@@ -119,6 +127,24 @@ function getImgString(content) {
     var srcArray = $(xml).find('img').map(function () {
         return "<a href='" + this.src + "' target='blank' ><img class='popUpImg' src='" + this.src + "' /></a>";
     }).get();
+    return srcArray
+}
 
+function getPopupImg(imgString) {
+    var theImg;
+    if (typeof imgString !== 'undefined' && imgString.length > 0) {
+        var imgDirty = imgString[0].split("src='")[1].split("' />")[0];
+        theImg = imgDirty
+    } else {
+        theImg = "images/tumblrLogo.png";
+    }
+    return theImg;
+}
+
+function getIframes(content) {
+    var xml = '<item>' + content + '</content>';
+    var srcArray = $(xml).find('iframe').map(function () {
+        return "<iframe class='iframe' width='291' height='163'  src='" + this.src + "' /></iframe>";
+    }).get();
     return srcArray
 }
