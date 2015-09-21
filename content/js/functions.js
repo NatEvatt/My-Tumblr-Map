@@ -125,7 +125,7 @@ function getImgString(content) {
 
     //            var srcArray = $(xml).
     var srcArray = $(xml).find('img').map(function () {
-        return "<a href='" + this.src + "' target='blank' ><img class='popUpImg' src='" + this.src + "' /></a>";
+        return "<a href='" + this.src + "' data-featherlight='image' target='blank' ><img class='popUpImg' src='" + this.src + "' /></a>";
     }).get();
     return srcArray
 }
