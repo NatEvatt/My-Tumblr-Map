@@ -106,9 +106,9 @@ function getMapCoordinates(array) {
 
 function getUrl() {
     if (pageNum == 1) {
-        return "http://natandsaz.tumblr.com/rss";
+        return usernames.tumblrPage+"/rss";
     } else {
-        return "http://natandsaz.tumblr.com/page/" + pageNum + "/rss";
+        return usernames.tumblrPage+"/page/" + pageNum + "/rss";
     }
 }
 
