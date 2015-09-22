@@ -1,0 +1,4 @@
+var usernames = {
+    "mapBoxToken": "Your Mapbox Token Goes Here",
+    "tumblrPage": "http://mycoolblog.tumblr.com"
+}
