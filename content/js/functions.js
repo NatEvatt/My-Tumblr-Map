@@ -1,5 +1,5 @@
 var eachEntryJson = [];
-var pageNum = 1;
+var pageNum = 2;
 var myLayer;
 
 
@@ -8,21 +8,24 @@ parseRSS(url, callback);
 
 function parseRSS(url, callback) {
     $.ajax({
-        url: document.location.protocol + '//ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=10&callback=?&q=' + encodeURIComponent(url),
+        //url: document.location.protocol + '//ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=10&callback=?&q=' + encodeURIComponent(url),
+        //        url: "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20feednormalizer%20where%20url%3D'http%3A%2F%2Fnatandsaz.tumblr.com%2Fpage%2F3%2Frss'%20and%20output%3D'atom_1.0'&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys",
+        url: "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20feednormalizer%20where%20url%3D'" + encodeURIComponent(url) + "'%20and%20output%3D'atom_1.0'&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys",
         dataType: 'json',
         success: function (data) {
             pageNum += 1;
-            callback(data.responseData.feed);
+            callback(data.query.results.feed);
         }
     });
 }
 
 function callback(data) {
 
-    if (data.entries.length > 0) {
-        for (var i = 0; i < data.entries.length; i++) {
-            eachEntryJson.push(data.entries[i]);
-            if (i == data.entries.length - 1) {
+//    if (data.entry.length > 0) {
+    if (typeof data.entry !== 'undefined') {
+        for (var i = 0; i < data.entry.length; i++) {
+            eachEntryJson.push(data.entry[i]);
+            if (i == data.entry.length - 1) {
                 var url = getUrl();
                 parseRSS(url, callback);
             }
@@ -37,9 +40,9 @@ function mapEntries() {
     for (var i = 0; i < eachEntryJson.length; i++) {
 
         //get the mapcoordinates
-        var description = eachEntryJson[i].content;
-        var mapCoords = getMapCoordinates(eachEntryJson[i].categories);
-        var imgString = getImgString(eachEntryJson[i].content);
+        var description = eachEntryJson[i].summary.content;
+        var mapCoords = getMapCoordinates(eachEntryJson[i].category);
+        var imgString = getImgString(eachEntryJson[i].summary.content);
         var popUpImg = getPopupImg(imgString);
 
         //If there are mapCoordinates in the post, map them
@@ -56,16 +59,16 @@ function mapEntries() {
                 title: title
             });
             //                    var title = eachEntryJson[i].title;
-            //                    var snippet = eachEntryJson[i].contentSnippet;
-            var iframeArray = getIframes(eachEntryJson[i].content);
-            var content = getContentString(eachEntryJson[i].content);
+            //                    var snippet = eachEntryJson[i].summary.contentSnippet;
+            var iframeArray = getIframes(eachEntryJson[i].summary.content);
+            var content = getContentString(eachEntryJson[i].summary.content);
             var link = eachEntryJson[i].link;
             var PopupString = "";
             if (iframeArray.length > 0) { //for videos
                 PopupString += iframeArray[0];
             }
             PopupString += content[0];
-            if (imgString.length > 0) {//incase it is a video and has no img
+            if (imgString.length > 0) { //incase it is a video and has no img
                 PopupString += imgString[0]
             }
             for (var k = 1; k < content.length; k++) {
@@ -95,8 +98,8 @@ function mapEntries() {
 function getMapCoordinates(array) {
     var mapCoordinates;
     for (var i = 0; i < array.length; i++) {
-        if (array[i].indexOf("latlon") > -1) {
-            mapCoordinates = array[i].split('latlon')[1].split('__');
+        if (array[i].term.indexOf("latlon") > -1) {
+            mapCoordinates = array[i].term.split('latlon')[1].split('__');
         }
     }
     //            if (mapCoordinates[0] && mapCoordinates[1]) {
@@ -105,10 +108,10 @@ function getMapCoordinates(array) {
 }
 
 function getUrl() {
-    if (pageNum == 1) {
-        return usernames.tumblrPage+"/rss";
+    if (pageNum == 2) {
+        return usernames.tumblrPage + "/rss";
     } else {
-        return usernames.tumblrPage+"/page/" + pageNum + "/rss";
+        return usernames.tumblrPage + "/page/" + pageNum + "/rss";
     }
 }
 
@@ -136,7 +139,7 @@ function getPopupImg(imgString) {
         var imgDirty = imgString[0].split("src='")[1].split("' />")[0];
         theImg = imgDirty
     } else {
-        theImg = "images/tumblrLogo.png";
+        theImg = "content/images/tumblrLogo.png";
     }
     return theImg;
 }

@@ -27,7 +27,16 @@
         var map = L.mapbox.map('map', 'mapbox.streets')
             .setView([37.391296, -5.989906], 6);
         myLayer = L.mapbox.featureLayer().addTo(map);
-        var markerCluster = L.markerClusterGroup();
+        //        var markerCluster = L.markerClusterGroup();
+        var markerCluster = new L.MarkerClusterGroup({
+            polygonOptions: {
+                fillColor: '#3887be',
+                color: '#3887be',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.5
+            }
+        });
     </script>
 </body>
 
